@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class DiskUtils {
@@ -10,21 +11,39 @@ public class DiskUtils {
 	 * @param path provide the full path with the name and format of the image that will be stored
 	 * @param imageUrl url location from where the file will be downloaded
 	 */
-	public void writeImageToDisk(String path, String imageUrl) throws IOException {
-		URL url = new URL(imageUrl);
-		InputStream in = new BufferedInputStream(url.openStream());
+	public void writeImageToDisk(String path, String imageUrl) {
+		URL url = null;
+		try {
+			url = new URL(imageUrl);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+
+		InputStream in = null;
+		try {
+			in = new BufferedInputStream(url.openStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		byte[] buf = new byte[1024];
 		int n;
 
-		while (-1 != (n = in.read(buf))) {
-			out.write(buf, 0, n);
-		}
-		out.close();
-		in.close();
-		byte[] response = out.toByteArray();
+		try {
+			while (-1 != (n = in.read(buf))) {
+				out.write(buf, 0, n);
+			}
 
-		writeFileToDisk(path, response);
+			out.close();
+			in.close();
+			byte[] response = out.toByteArray();
+			writeFileToDisk(path, response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
 	}
 
 	/**

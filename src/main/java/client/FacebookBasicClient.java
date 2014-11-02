@@ -31,14 +31,10 @@ public class FacebookBasicClient {
 			do {
 				for (Photo photo : allPhotos.getData()) {
 					counter += 1;
-					try {
 						if (photo != null && photo.getImages() != null && photo.getId() != null) {
 							DiskUtils diskUtils = new DiskUtils();
 							diskUtils.writeImageToDisk(userDir + File.separator + photo.getId() + ".jpg", photo.getImages().get(0).getSource());
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 				}
 
 				allPhotos = facebookClient.fetchConnectionPage(allPhotos.getNextPageUrl(), Photo.class);
