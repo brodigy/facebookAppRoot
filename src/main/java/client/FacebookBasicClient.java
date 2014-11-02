@@ -7,10 +7,9 @@ import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Version;
-import com.restfb.exception.FacebookNetworkException;
 import com.restfb.exception.FacebookOAuthException;
 import com.restfb.types.Photo;
-import storage.DiskUtils;
+import utils.DiskUtils;
 import com.restfb.types.User;
 
 import java.io.File;
@@ -25,7 +24,7 @@ public class FacebookBasicClient {
 	 * @param userDir root path to facebook user where all pictures will be saved
 	 * @return the number of pictures written to disk
 	 */
-	public int writeAllPictures(FacebookClient facebookClient, String userFacebookId, String userDir) throws FacebookNetworkException {
+	public int writeAllPictures(FacebookClient facebookClient, String userFacebookId, String userDir) throws FacebookOAuthException {
 		Connection<Photo> allPhotos = facebookClient.fetchConnection(userFacebookId + "/photos/uploaded", Photo.class);
 		int counter = 0;
 		if (allPhotos.getData().size() != 0) {
