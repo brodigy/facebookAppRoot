@@ -1,27 +1,32 @@
 import client.FacebookBasicClient;
 import com.restfb.FacebookClient;
 import com.restfb.types.User;
+import dao.FacebookUser;
+import dao.FacebookUserDao;
+import service.PersistService;
+import service.PersistServiceImpl;
 
 import java.util.concurrent.Callable;
 
 
 public class UserTask implements Callable<Boolean>{
-	private User user;
-	private FacebookClient facebookClient;
+	String id;
+	private FacebookUserDao facebookUserDao;
 	private String outputDir;
 
 
-	public UserTask(User user, FacebookClient facebookClient, String outputDir) {
-		this.user = user;
-		this.facebookClient = facebookClient;
+	public UserTask(String id, FacebookUserDao facebookUserDao, String outputDir) {
+		this.id = id;
+		this.facebookUserDao = facebookUserDao;
 		this.outputDir = outputDir;
 	}
 
 
 	@Override
 	public Boolean call() throws Exception {
-		System.out.println("Called UserTask.call() for user:" + user.getName());
-		FacebookBasicClient facebookBasicClient = new FacebookBasicClient();
-		return facebookBasicClient.storeDataForUser(facebookClient, user, outputDir);
+		PersistService persistService = new PersistServiceImpl();
+		FacebookUser facebookUser = facebookUserDao.getFacebookUserWithCompleteInfo(id);
+		System.out.println("New thread was spawned for user :" + facebookUser.getFullName());
+		return persistService.persistsUserToDisk(facebookUser, outputDir);
 	}
 }
