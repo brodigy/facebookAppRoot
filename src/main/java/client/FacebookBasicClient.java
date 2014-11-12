@@ -9,8 +9,8 @@ import com.restfb.FacebookClient;
 import com.restfb.Version;
 import com.restfb.exception.FacebookOAuthException;
 import com.restfb.types.Photo;
-import utils.DiskUtils;
 import com.restfb.types.User;
+import utils.DiskUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +18,22 @@ import java.io.IOException;
 public class FacebookBasicClient {
 
 	/**
+	 * This method will refresh the facebook client with a new user token thus preventing the 2 hours expiration
+	 *
+	 * @return a new facebook client
+	 */
+	public static FacebookClient refreshConnection() {
+		DiskUtils diskUtils = new DiskUtils();
+		String newUserToken = diskUtils.getNewTokenFromConsole();
+		return new DefaultFacebookClient(newUserToken, Version.VERSION_1_0);
+	}
+
+	/**
 	 * Method that iterates through all user pictures and writes them to disk
+	 *
 	 * @param facebookClient client for facebook graph API
 	 * @param userFacebookId facebook user platform ID
-	 * @param userDir root path to facebook user where all pictures will be saved
+	 * @param userDir        root path to facebook user where all pictures will be saved
 	 * @return the number of pictures written to disk
 	 */
 	public int writeAllPictures(FacebookClient facebookClient, String userFacebookId, String userDir) throws FacebookOAuthException {
@@ -31,10 +43,10 @@ public class FacebookBasicClient {
 			do {
 				for (Photo photo : allPhotos.getData()) {
 					counter += 1;
-						if (photo != null && photo.getImages() != null && photo.getId() != null) {
-							DiskUtils diskUtils = new DiskUtils();
-							diskUtils.writeImageToDisk(userDir + File.separator + photo.getId() + ".jpg", photo.getImages().get(0).getSource());
-						}
+					if (photo != null && photo.getImages() != null && photo.getId() != null) {
+						DiskUtils diskUtils = new DiskUtils();
+						diskUtils.writeImageToDisk(userDir + File.separator + photo.getId() + ".jpg", photo.getImages().get(0).getSource());
+					}
 				}
 
 				allPhotos = facebookClient.fetchConnectionPage(allPhotos.getNextPageUrl(), Photo.class);
@@ -45,9 +57,10 @@ public class FacebookBasicClient {
 
 	/**
 	 * Method that create a custom directory for each facebook friend and stores all the images and a info txt file
+	 *
 	 * @param facebookClient client for facebook graph API
-	 * @param facebookUser user name
-	 * @param outputFolder destination folder where info and all data will be stored
+	 * @param facebookUser   user name
+	 * @param outputFolder   destination folder where info and all data will be stored
 	 */
 	public boolean storeDataForUser(FacebookClient facebookClient, User facebookUser, String outputFolder) throws FacebookOAuthException {
 		DiskUtils diskUtils = new DiskUtils();
@@ -60,13 +73,14 @@ public class FacebookBasicClient {
 
 	/**
 	 * Method that stores user facebook info as json file
+	 *
 	 * @param facebookClient client for facebook graph API
 	 * @param userFacebookId facebook user platform ID
-	 * @param userDir root path to facebook user where all user info will be saved
+	 * @param userDir        root path to facebook user where all user info will be saved
 	 */
 	public String writeUserInfo(FacebookClient facebookClient, String userFacebookId, String userDir) {
 		User user = facebookClient.fetchObject(userFacebookId, User.class);
-		String infoPath ="";
+		String infoPath = "";
 
 		ObjectMapper jacksonMapper = new ObjectMapper();
 		jacksonMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -79,7 +93,7 @@ public class FacebookBasicClient {
 
 		try {
 			infoPath = userDir + File.separator + user.getName() + ".txt";
-			if(jsonFormat != null) {
+			if (jsonFormat != null) {
 				DiskUtils diskUtils = new DiskUtils();
 				diskUtils.writeFileToDisk(infoPath, jsonFormat.getBytes());
 			}
@@ -92,8 +106,9 @@ public class FacebookBasicClient {
 
 	/**
 	 * Method that will store all the data (info and pictures) for all facebook friends
+	 *
 	 * @param facebookClient client for facebook graph API
-	 * @param outputDir root folder where all facebook friends will be saved
+	 * @param outputDir      root folder where all facebook friends will be saved
 	 * @return true if the method returns (used in case the user token expires and user input is needed)
 	 */
 	public boolean storeDataForAllUsers(FacebookClient facebookClient, String outputDir) {
@@ -102,7 +117,7 @@ public class FacebookBasicClient {
 		for (User friend : allFriends.getData()) {
 			System.out.println("Name: " + friend.getName() + " id: " + friend.getId());
 
-			int tries=0;
+			int tries = 0;
 			boolean finished = false;
 			do {
 				try {
@@ -115,17 +130,7 @@ public class FacebookBasicClient {
 			} while (tries < 3 && !finished);
 		}
 
-		return  true;
-	}
-
-	/**
-	 * This method will refresh the facebook client with a new user token thus preventing the 2 hours expiration
-	 * @return a new facebook client
-	 */
-	public static FacebookClient refreshConnection() {
-		DiskUtils diskUtils = new DiskUtils();
-		String newUserToken = diskUtils.getNewTokenFromConsole();
-		return  new DefaultFacebookClient(newUserToken, Version.VERSION_1_0);
+		return true;
 	}
 
 }

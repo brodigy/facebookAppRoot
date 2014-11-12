@@ -1,9 +1,4 @@
-import com.restfb.Connection;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
-import com.restfb.Version;
 import com.restfb.exception.FacebookResponseContentException;
-import com.restfb.types.User;
 import dao.FacebookUser;
 import dao.FacebookUserDao;
 
@@ -29,7 +24,7 @@ public class RunParallel {
 		Integer downloadedUsers = 0;
 		for (int i = 0; i <= batches; i++) {
 
-			if(modulo !=0 && i != batches) {
+			if (modulo != 0 && i != batches) {
 				downloadedUsers += runBatch(i * NUM_THREADS, (i + 1) * NUM_THREADS, usersIds, facebookUserDao, outputDir);
 			} else {
 				downloadedUsers += runBatch(i * NUM_THREADS, i * NUM_THREADS + modulo, usersIds, facebookUserDao, outputDir);

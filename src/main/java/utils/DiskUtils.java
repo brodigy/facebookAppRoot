@@ -8,7 +8,8 @@ public class DiskUtils {
 
 	/**
 	 * Method that persists a image resource found at a specific url to local file system path
-	 * @param path provide the full path with the name and format of the image that will be stored
+	 *
+	 * @param path     provide the full path with the name and format of the image that will be stored
 	 * @param imageUrl url location from where the file will be downloaded
 	 */
 	public void writeImageToDisk(String path, String imageUrl) {
@@ -48,6 +49,7 @@ public class DiskUtils {
 
 	/**
 	 * Method that creates a new folder with a given name
+	 *
 	 * @param rootPath path where new folder will be created
 	 * @param userName facebook name for friend
 	 * @return full path of the new folder
@@ -62,7 +64,8 @@ public class DiskUtils {
 
 	/**
 	 * Method that save content to disk with a given file name
-	 * @param path full path where new file will be saved, complete with filename and extension
+	 *
+	 * @param path        full path where new file will be saved, complete with filename and extension
 	 * @param fileContent actual content that will be stored to disk
 	 * @throws IOException
 	 */
@@ -75,6 +78,7 @@ public class DiskUtils {
 
 	/**
 	 * Method that will ask a user to give a refreshed access token via cli
+	 *
 	 * @return new user token given as console input
 	 */
 	public String getNewTokenFromConsole() {

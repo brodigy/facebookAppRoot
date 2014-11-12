@@ -1,6 +1,3 @@
-import client.FacebookBasicClient;
-import com.restfb.FacebookClient;
-import com.restfb.types.User;
 import dao.FacebookUser;
 import dao.FacebookUserDao;
 import service.PersistService;
@@ -9,7 +6,7 @@ import service.PersistServiceImpl;
 import java.util.concurrent.Callable;
 
 
-public class UserTask implements Callable<Boolean>{
+public class UserTask implements Callable<Boolean> {
 	String id;
 	private FacebookUserDao facebookUserDao;
 	private String outputDir;

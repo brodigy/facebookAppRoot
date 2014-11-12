@@ -17,12 +17,12 @@ public class Run {
 		FacebookUserDao facebookUserDao = new FacebookUserDaoImpl(facebookClient);
 		Map<String, FacebookUser> map = facebookUserDao.getAllFacebookUsers();
 
-		if(args.length == 1) {
+		if (args.length == 1) {
 			showAllAvailableFriends(map);
-		} else if(args.length == 2) {
+		} else if (args.length == 2) {
 			RunParallel runParallel = new RunParallel();
 			runParallel.runMultipleThreads(map, facebookUserDao, args[0]);
-		} else if(args.length == 3) {
+		} else if (args.length == 3) {
 			getFacebookUserById(map, args[2], facebookUserDao, args[1]);
 		}
 
@@ -37,7 +37,7 @@ public class Run {
 
 	public static void getFacebookUserById(Map<String, FacebookUser> map, String id, FacebookUserDao facebookUserDao, String outputDir) {
 
-		if(map.containsKey(id)) {
+		if (map.containsKey(id)) {
 			PersistService persistService = new PersistServiceImpl();
 			FacebookUser facebookUser = facebookUserDao.getFacebookUserWithCompleteInfo(id);
 			persistService.persistsUserToDisk(facebookUser, outputDir);

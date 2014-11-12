@@ -8,9 +8,7 @@ import com.restfb.types.Photo;
 import com.restfb.types.User;
 import dao.FacebookUser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FacebookServiceImpl implements FacebookService {

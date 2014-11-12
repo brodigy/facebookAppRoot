@@ -8,7 +8,6 @@ import utils.DiskUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 public class PersistServiceImpl implements PersistService {
@@ -61,15 +60,15 @@ public class PersistServiceImpl implements PersistService {
 	public boolean persistsUserImagesToDisk(FacebookUser facebookUser, String userDir) {
 
 		Map<String, String> userImages = facebookUser.getImages();
-		if(userImages == null) {
+		if (userImages == null) {
 			return false;
 		}
 		int count = 0;
 
 		for (Map.Entry<String, String> entry : userImages.entrySet()) {
 			DiskUtils diskUtils = new DiskUtils();
-				diskUtils.writeImageToDisk(userDir + File.separator + entry.getKey() + ".jpg", entry.getValue());
-				count++;
+			diskUtils.writeImageToDisk(userDir + File.separator + entry.getKey() + ".jpg", entry.getValue());
+			count++;
 
 		}
 
