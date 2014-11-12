@@ -4,7 +4,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import storage.DiskUtils;
+import utils.DiskUtils;
 
 import java.io.File;
 import java.io.IOException;

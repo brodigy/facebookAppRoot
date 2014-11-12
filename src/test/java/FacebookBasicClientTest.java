@@ -42,7 +42,7 @@ public class FacebookBasicClientTest {
 		String dirPath = testFolder.getRoot().getAbsolutePath();
 
 		ObjectMapper mapper = new ObjectMapper();
-		User testUser = mapper.readValue(new File("src/main/resources/TestUser.json"), User.class);
+		User testUser = mapper.readValue(new File("src/test/resources/TestUser.json"), User.class);
 
 		FacebookClient mockFacebookClient = mock(FacebookClient.class);
 		when(mockFacebookClient.fetchObject("userNr1", User.class)).thenReturn(testUser);
@@ -51,7 +51,7 @@ public class FacebookBasicClientTest {
 		String infoPath = facebookBasicClient.writeUserInfo(mockFacebookClient, "userNr1", dirPath);
 
 		assertThat("Facebook info not the same as expected", FileUtils.fileRead(infoPath),
-				sameJSONAs(FileUtils.fileRead("src/main/resources/TestUser.json")).allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
+				sameJSONAs(FileUtils.fileRead("src/test/resources/TestUser.json")).allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 	}
 
 	@Test

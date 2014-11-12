@@ -1,51 +1,65 @@
-import com.restfb.Connection;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
-import com.restfb.Version;
 import com.restfb.exception.FacebookResponseContentException;
-import com.restfb.types.User;
+import dao.FacebookUser;
+import dao.FacebookUserDao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 public class RunParallel {
 
-    private static final String accessToken = "CAACEdEose0cBAOHaaXAdKwXyfo7s3Vv7ZCiPhQH457bXcIl9seVizWoTCetDq60ZA5WC1WP5S51ieoIU44d9oN4zbGAZCMLJSvyWV7KphilH7ZALW8hdnOIomxRu2yPZCu01UjPCZB0qkNieLFFvhMiDLxHM7EzOlK8fkoTkFRB2j4T3AckFE8zhvHW4uFbatXsOso3npG4W1U7sG7BzM4";
-    private static final String outputDir = "//Users//petrealexandru//output";
-    private static final Integer NUM_THREADS = 8;
+	private static final Integer NUM_THREADS = 8;
 
-    public static void main(String[] args) {
+	public boolean runMultipleThreads(Map<String, FacebookUser> map, FacebookUserDao facebookUserDao, String outputDir) {
 
+		List<String> usersIds = new ArrayList<>();
+		for (Map.Entry<String, FacebookUser> entry : map.entrySet()) {
+			usersIds.add(entry.getKey());
+		}
 
-        FacebookClient facebookClient = new DefaultFacebookClient(accessToken, Version.VERSION_1_0);
-        Connection<User> allFriends = facebookClient.fetchConnection("me/friends", User.class);
-        List<User> usersList = allFriends.getData();
+		Integer batches = usersIds.size() / NUM_THREADS;
+		Integer modulo = usersIds.size() % NUM_THREADS;
 
-        ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
-        List<Future<Boolean>> userTasks = new ArrayList<>();
+		Integer downloadedUsers = 0;
+		for (int i = 0; i <= batches; i++) {
 
-        for (int i = 0; i < NUM_THREADS; i++) {
-            Callable<Boolean> userTask = new UserTask(usersList.get(i), facebookClient, outputDir);
-            Future<Boolean> futureUser = executorService.submit(userTask);
-            userTasks.add(futureUser);
-        }
+			if (modulo != 0 && i != batches) {
+				downloadedUsers += runBatch(i * NUM_THREADS, (i + 1) * NUM_THREADS, usersIds, facebookUserDao, outputDir);
+			} else {
+				downloadedUsers += runBatch(i * NUM_THREADS, i * NUM_THREADS + modulo, usersIds, facebookUserDao, outputDir);
+			}
 
-        executorService.shutdown();
+			System.out.println("Successfully downloaded: " + downloadedUsers + " users");
+		}
 
-        int downloadedUsers = 0;
-        for (Future<Boolean> futureUser : userTasks) {
+		return true;
+	}
 
-            try {
-                if (futureUser.get()) {
-                    downloadedUsers++;
-                }
-            } catch (CancellationException | ExecutionException | InterruptedException | FacebookResponseContentException e) {
-                e.printStackTrace();
-            }
-        }
+	public Integer runBatch(Integer from, Integer to, List<String> usersIds, FacebookUserDao facebookUserDao, String outputDir) {
+		ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+		List<Future<Boolean>> userTasks = new ArrayList<>();
 
-        System.out.println("Number of successfully downloaded users: " + downloadedUsers);
+		for (int i = from; i < to; i++) {
+			Callable<Boolean> userTask = new UserTask(usersIds.get(i), facebookUserDao, outputDir);
+			Future<Boolean> futureUser = executorService.submit(userTask);
+			userTasks.add(futureUser);
+		}
 
-    }
+		executorService.shutdown();
+
+		Integer downloadedUsers = 0;
+		for (Future<Boolean> futureUser : userTasks) {
+
+			try {
+				if (futureUser.get()) {
+					downloadedUsers++;
+				}
+			} catch (CancellationException | ExecutionException | InterruptedException | FacebookResponseContentException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return downloadedUsers;
+	}
 }
